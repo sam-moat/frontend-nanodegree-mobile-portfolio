@@ -501,6 +501,14 @@ function updatePositions() {
   frame++;
   window.performance.mark("mark_start_frame");
 
+//------- OPTIMISATIONS SUMMARY --------- //
+// 1. created variable 'l' for items.length and took this outside of the loop //
+// 2. created variable 'scroll' for document.body.scrollTop and took this outside of the loop
+//credit for 1 & 2: https://www.w3schools.com/js/js_performance.asp
+// 3. changed .querySelectorAll to getElementsByClassName
+// credit: https://www.reddit.com/r/learnjavascript/comments/356k1v/confused_on_queryselector_and_getelementbyid/
+
+
   //var items = document.querySelectorAll('.mover');
   var items = document.getElementsByClassName('mover');
   var l = items.length;
@@ -532,12 +540,18 @@ function updatePositions() {
 window.addEventListener('scroll', updatePositions);
 
 // Generates the sliding pizzas when the page loads.
+
+//------- OPTIMISATIONS SUMMARY --------- //
+// 1. created variable 'movingPizza' for document.getElementById and took this outside of the loop //
+//credit: https://www.w3schools.com/js/js_performance.asp 
+// 2. Changed .querySelector to getElementById
+//3. changed i<200 to i<25 (200 seemed excessive here!)
+
 document.addEventListener('DOMContentLoaded', function() {
   var cols = 8;
   var s = 256;
   var movingPizza = document.getElementById("movingPizzas1");
-  //reduced from 200 to 25 pizzas generated
-  for (var i = 0; i < 25; i++)  {
+    for (var i = 0; i < 25; i++)  {
     var elem = document.createElement('img');
     elem.className = 'mover';
     elem.src = "images/pizza.png";
