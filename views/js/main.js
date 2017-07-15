@@ -421,6 +421,41 @@ var resizePizzas = function(size) {
 
   changeSliderLabel(size);
 
+  //------- OPTIMISATIONS SUMMARY --------- //
+  // 1. created variable 'pizzaSizeSelector' for document.getElementsByClassName("randomPizzaContainer"); and took this outside of the loop //
+  //credit: https://www.w3schools.com/js/js_performance.asp
+  //2. Change document.querySelectorAll to getElementsByClassName
+  // credit: https://www.reddit.com/r/learnjavascript/comments/356k1v/confused_on_queryselector_and_getelementbyid/
+  //3. change sizeSwitcher function to remove previous dx function.  now modified style to % width
+  // credit: cam's classroom examaple & https://www.w3schools.com/js/js_switch.asp
+
+
+  // used with slider - iterates through pizza elements on the page and changes their widths
+  var replaceWidth;
+
+  function sizeSwitcher (size) {
+    switch(size) {
+      case "1":
+        replaceWidth = 25;
+        break;
+      case "2":
+        replaceWidth = 33.3;
+        break;
+      case "3":
+        replaceWidth = 50;
+        break;
+      default:
+        console.log("bug in sizeSwitcher");
+    }
+
+    var pizzaSizeSelector = document.getElementsByClassName("randomPizzaContainer");
+    for (var i = 0; i < pizzaSizeSelector.length; i++) {
+      pizzaSizeSelector[i].style.width = replaceWidth + "%";
+  }
+}
+
+sizeSwitcher(size);
+/*
    // Returns the size difference to change a pizza element from one size to another. Called by changePizzaSlices(size).
   function determineDx (elem, size) {
     var oldWidth = elem.offsetWidth;
@@ -445,18 +480,27 @@ var resizePizzas = function(size) {
     var dx = (newSize - oldSize) * windowWidth;
 
     return dx;
-  }
+
+
 
   // Iterates through pizza elements on the page and changes their widths
   function changePizzaSizes(size) {
-    for (var i = 0; i < document.querySelectorAll(".randomPizzaContainer").length; i++) {
-      var dx = determineDx(document.querySelectorAll(".randomPizzaContainer")[i], size);
-      var newwidth = (document.querySelectorAll(".randomPizzaContainer")[i].offsetWidth + dx) + 'px';
-      document.querySelectorAll(".randomPizzaContainer")[i].style.width = newwidth;
+    var pizzaSizeSelector = document.getElementsByClassName("randomPizzaContainer");
+    for (var i = 0; i < pizzaSizeSelector.length; i++) {
+      var dx = determineDx(pizzaSizeSelector[i], size);
+      var newwidth = (pizzaSizeSelector[i].offsetWidth + dx) + 'px';
+      pizzaSizeSelector[i].style.width = newwidth;
+
+  //  for (var i = 0; i < document.querySelectorAll(".randomPizzaContainer").length; i++) {
+    //  var dx = determineDx(document.querySelectorAll(".randomPizzaContainer")[i], size);
+    //  var newwidth = (document.querySelectorAll(".randomPizzaContainer")[i].offsetWidth + dx) + 'px';
+    //  document.querySelectorAll(".randomPizzaContainer")[i].style.width = newwidth;
     }
   }
 
   changePizzaSizes(size);
+
+*/
 
   // User Timing API is awesome
   window.performance.mark("mark_end_resize");
@@ -543,7 +587,7 @@ window.addEventListener('scroll', updatePositions);
 
 //------- OPTIMISATIONS SUMMARY --------- //
 // 1. created variable 'movingPizza' for document.getElementById and took this outside of the loop //
-//credit: https://www.w3schools.com/js/js_performance.asp 
+//credit: https://www.w3schools.com/js/js_performance.asp
 // 2. Changed .querySelector to getElementById
 //3. changed i<200 to i<25 (200 seemed excessive here!)
 
