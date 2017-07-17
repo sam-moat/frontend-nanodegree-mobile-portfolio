@@ -541,33 +541,63 @@ function logAverageFrame(times) {   // times is the array of User Timing measure
 // https://www.igvita.com/slides/2012/devtools-tips-and-tricks/jank-demo.html
 
 // Moves the sliding background pizzas based on scroll position
+
+
+
+//runs updatePositions on scroll using requestAnimationFrame
+//credit: http://www.html5rocks.com/en/tutorials/speed/animations/
+var latestKnownScrollY = 0;
+var ticking = false;
+
+function onScroll() {
+	latestKnownScrollY = window.scrollY;
+  requestTick();
+  //console.log(latestKnownScrollY);
+}
+
+function requestTick() {
+  if(!ticking) {
+    requestAnimationFrame(updatePositions);
+    ticking = true;
+  }
+}
+
+
 function updatePositions() {
   frame++;
   window.performance.mark("mark_start_frame");
 
-//------- OPTIMISATIONS SUMMARY --------- //
+
+  var currentScrollY = latestKnownScrollY;
+
+  //------- OPTIMISATIONS SUMMARY --------- //
 // 1. created variable 'l' for items.length and took this outside of the loop //
 // 2. created variable 'scroll' for document.body.scrollTop and took this outside of the loop
 //credit for 1 & 2: https://www.w3schools.com/js/js_performance.asp
 // 3. changed .querySelectorAll to getElementsByClassName
 // credit: https://www.reddit.com/r/learnjavascript/comments/356k1v/confused_on_queryselector_and_getelementbyid/
+// 4. changed style.left to style.transform
+// credit: https://discussions.udacity.com/t/replace-left-with-transform/20093
+
 
 
   //var items = document.querySelectorAll('.mover');
   var items = document.getElementsByClassName('mover');
   var l = items.length;
   var scroll = document.body.scrollTop;
+  var halfIntFrameWidth = window.innerWidth / 2;
   //for (var i = 0; i < items.length; i++) {
   for (var i = 0; i < l; i++) {
 
     var phase = Math.sin((scroll / 1250) + (i % 5));
-    items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
+    //items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
+    items[i].style.transform = "translateX(" + ((items[i].basicLeft + 100 * phase) - halfIntFrameWidth + 'px');
 
     //console.log(phase, document.body.scrollTop / 1250);
     //console.log(document.body.scrollTop / 1250);
     //console.log(i);
+    console.log(halfIntFrameWidth);
 
-    //items[i].style.webkitTransform = "translateX(-100px)";
   }
 
   // User Timing API to the rescue again. Seriously, it's worth learning.
@@ -578,10 +608,13 @@ function updatePositions() {
     var timesToUpdatePosition = window.performance.getEntriesByName("measure_frame_duration");
     logAverageFrame(timesToUpdatePosition);
   }
+  ticking = false;
 }
 
 // runs updatePositions on scroll
-window.addEventListener('scroll', updatePositions);
+//window.addEventListener('scroll', updatePositions);
+
+window.addEventListener('scroll', onScroll, false);
 
 // Generates the sliding pizzas when the page loads.
 
@@ -589,13 +622,13 @@ window.addEventListener('scroll', updatePositions);
 // 1. created variable 'movingPizza' for document.getElementById and took this outside of the loop //
 //credit: https://www.w3schools.com/js/js_performance.asp
 // 2. Changed .querySelector to getElementById
-//3. changed i<200 to i<25 (200 seemed excessive here!)
+//3. changed i<200 to i<45 (200 seemed excessive here!)
 
 document.addEventListener('DOMContentLoaded', function() {
   var cols = 8;
   var s = 256;
   var movingPizza = document.getElementById("movingPizzas1");
-    for (var i = 0; i < 25; i++)  {
+    for (var i = 0; i < 45; i++)  {
     var elem = document.createElement('img');
     elem.className = 'mover';
     elem.src = "images/pizza.png";
